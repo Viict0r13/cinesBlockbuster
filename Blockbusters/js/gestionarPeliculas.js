@@ -33,6 +33,7 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
         var divPeliculasFiltradas = document.getElementById("divPeliculasFiltradas");
+
         divPeliculasFiltradas.innerHTML = '<br>';
         var pagina = 1
         let url = `http://www.omdbapi.com/?apikey=${APIKEY}&type=movie&page=${pagina}`;
@@ -46,6 +47,9 @@ document.addEventListener('DOMContentLoaded', function () {
             filtros += `&y=${year.value}`;
         }
 
+        divPeliculasFiltradas.innerHTML += '<form action="#" method="post">'
+
+
         url += filtros
         fetch(url)
             .then(response => response.json())
@@ -57,55 +61,178 @@ document.addEventListener('DOMContentLoaded', function () {
                         let year = pelicula.Year;
                         let id = pelicula.imdbID;
                         if (parImpar === "Impar") {
-                            divPeliculasFiltradas.innerHTML += `
-                            <div class="pelicula${parImpar}">
-                                <table>
-                                    <tr>
-                                        <td rowspan="2"><a href="peliWiki.php?id=${id}"><img src="${poster}" alt="${titulo}" class="posterWiki"></a></td>
-                                        <td class="tituloWiki">${titulo}</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="yearWiki">${year}</td>
-                                    </tr>
-                                    <form action="#" method="post">
-                                    <tr>
-                                        <td class="btnActivar"><button type="submit" id="activar1" name ="activar1" value = "${id}">Activar en sala 1</button></td>
-                                        
-                                    </tr>
-                                    <tr>
-                                        <td class="btnActivar"><button type="submit" id="activar2" name ="activar2" value = "${id}">Activar en sala 2</button></td>
-                                    </tr>
-                                    <tr>
-                                        <td class="btnActivar"><button type="submit" id="activar3" name ="activar3" value = "${id}">Activar en sala 3</button></td>
-                                    </tr>
-                                    </form>
-                                </table>
-                            </div><br>`;
+                            let divImpar = document.createElement('div');
+                            divImpar.className = 'pelicula' + parImpar;
+                            let tablaImpar = document.createElement('table');
+                            let trTitulo = document.createElement('tr');
+                            let trYear = document.createElement('tr');
+                            let tr1 = document.createElement('tr');
+                            let tr2 = document.createElement('tr');
+                            let tr3 = document.createElement('tr');
+                            let tdImagen = document.createElement('td');
+                            let tdTitulo = document.createElement('td');
+                            let tdYear = document.createElement('td');
+                            let td1 = document.createElement('td');
+                            td1.className = "btnActivar";
+                            let td2 = document.createElement('td');
+                            td2.className = "btnActivar";
+                            let td3 = document.createElement('td');
+                            td3.className = "btnActivar";
+
+
+
+                            let imagen = document.createElement('img');
+                            imagen.src = poster;
+                            imagen.alt = titulo;
+                            imagen.className = "posterWiki";
+
+                            let a = document.createElement('a');
+                            a.href = "peliWiki.php?id=" + id;
+                            a.appendChild(imagen);
+
+                            let form = document.createElement('form');
+                            form.action = "#"
+                            form.method = "post"
+
+                            let activar1 = document.createElement('button');
+                            activar1.type = "submit";
+                            activar1.id = "activar1";
+                            activar1.className = "activar1";
+                            activar1.name = "activar1";
+                            activar1.value = id;
+                            activar1.textContent = "Activar en sala 1";
+
+                            let activar2 = document.createElement('button');
+                            activar2.type = "submit";
+                            activar2.id = "activar2";
+                            activar2.classname = "activar2";
+                            activar2.name = "activar2";
+                            activar2.value = id;
+                            activar2.textContent = "Activar en sala 2";
+
+                            let activar3 = document.createElement('button');
+                            activar3.type = "submit";
+                            activar3.id = "activar3";
+                            activar3.className = "activar3";
+                            activar3.name = "activar3";
+                            activar3.value = id;
+                            activar3.textContent = "Activar en sala 3";
+
+                            td1.appendChild(activar1);
+                            td2.appendChild(activar2);
+                            td3.appendChild(activar3);
+
+                            tr1.appendChild(td1);
+                            tr2.appendChild(td2);
+                            tr3.appendChild(td3);
+
+                            tdYear.className = "yearWiki";
+                            tdYear.textContent = year;
+                            trYear.appendChild(tdYear);
+
+                            tdTitulo.classame = "tituloWiki";
+                            tdTitulo.textContent = titulo;
+
+                            tdImagen.rowSpan = 2;
+                            tdImagen.appendChild(a);
+                            trTitulo.appendChild(tdImagen);
+                            trTitulo.appendChild(tdTitulo);
+                            tablaImpar.appendChild(trTitulo)
+                            tablaImpar.appendChild(trYear)
+                            tablaImpar.appendChild(tr1)
+                            tablaImpar.appendChild(tr2)
+                            tablaImpar.appendChild(tr3)
+                            form.appendChild(tablaImpar)
+                            divImpar.appendChild(form)
+                            divImpar.innerHTML+="<br>";
+                            divPeliculasFiltradas.appendChild(divImpar);
                             parImpar = "Par"
                         } else {
-                            divPeliculasFiltradas.innerHTML += `
-                            <div class="pelicula${parImpar}">
-                                <table>
-                                    <tr>
-                                        <td rowspan="2"><a href="peliWiki.php?id=${id}"><img src="${poster}" alt="${titulo}" class="posterWiki"></a></td>
-                                        <td class="tituloWiki">${titulo}</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="yearWiki">${year}</td>
-                                    </tr>
-                                        <form action="#" method="post">
-                                    <tr>
-                                        <td class="btnActivar"><button type="submit" id="activar1" name ="activar1" value = "${id}">Activar en sala 1</button></td>
-                                    </tr>
-                                    <tr>
-                                        <td class="btnActivar"><button type="submit" id="activar2" name ="activar2" value = "${id}">Activar en sala 2</button></td>
-                                    </tr>
-                                    <tr>
-                                        <td class="btnActivar"><button type="submit" id="activar3" name ="activar3" value = "${id}">Activar en sala 3</button></td>
-                                    </tr>
-                                    </form>
-                                </table>
-                            </div><br>`;
+                            let divPar = document.createElement('div');
+                            divPar.className = 'pelicula' + parImpar;
+                            let tablaPar = document.createElement('table');
+                            let trTitulo = document.createElement('tr');
+                            let trYear = document.createElement('tr');
+                            let tr1 = document.createElement('tr');
+                            let tr2 = document.createElement('tr');
+                            let tr3 = document.createElement('tr');
+                            let tdImagen = document.createElement('td');
+                            let tdTitulo = document.createElement('td');
+                            let tdYear = document.createElement('td');
+                            let td1 = document.createElement('td');
+                            td1.className = "btnActivar";
+                            let td2 = document.createElement('td');
+                            td2.className = "btnActivar";
+                            let td3 = document.createElement('td');
+                            td3.className = "btnActivar";
+
+
+
+                            let imagen = document.createElement('img');
+                            imagen.src = poster;
+                            imagen.alt = titulo;
+                            imagen.className = "posterWiki";
+
+                            let a = document.createElement('a');
+                            a.href = "peliWiki.php?id=" + id;
+                            a.appendChild(imagen);
+
+                            let form = document.createElement('form');
+                            form.action = "#"
+                            form.method = "post"
+
+                            let activar1 = document.createElement('button');
+                            activar1.type = "submit";
+                            activar1.id = "activar1";
+                            activar1.className = "activar1";
+                            activar1.name = "activar1";
+                            activar1.value = id;
+                            activar1.textContent = "Activar en sala 1";
+
+                            let activar2 = document.createElement('button');
+                            activar2.type = "submit";
+                            activar2.id = "activar2";
+                            activar2.classname = "activar2";
+                            activar2.name = "activar2";
+                            activar2.value = id;
+                            activar2.textContent = "Activar en sala 2";
+
+                            let activar3 = document.createElement('button');
+                            activar3.type = "submit";
+                            activar3.id = "activar3";
+                            activar3.className = "activar3";
+                            activar3.name = "activar3";
+                            activar3.value = id;
+                            activar3.textContent = "Activar en sala 3";
+
+                            td1.appendChild(activar1);
+                            td2.appendChild(activar2);
+                            td3.appendChild(activar3);
+
+                            tr1.appendChild(td1);
+                            tr2.appendChild(td2);
+                            tr3.appendChild(td3);
+
+                            tdYear.className = "yearWiki";
+                            tdYear.textContent = year;
+                            trYear.appendChild(tdYear);
+
+                            tdTitulo.classame = "tituloWiki";
+                            tdTitulo.textContent = titulo;
+
+                            tdImagen.rowSpan = 2;
+                            tdImagen.appendChild(a);
+                            trTitulo.appendChild(tdImagen);
+                            trTitulo.appendChild(tdTitulo);
+                            tablaPar.appendChild(trTitulo)
+                            tablaPar.appendChild(trYear)
+                            tablaPar.appendChild(tr1)
+                            tablaPar.appendChild(tr2)
+                            tablaPar.appendChild(tr3)
+                            form.appendChild(tablaPar)
+                            divPar.appendChild(form)
+                            divPeliculasFiltradas.appendChild(divPar);
+                            divPar.innerHTML+="<br>";
                             parImpar = "Impar"
                         }
                     });
@@ -115,7 +242,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 pagina++;
             })
             .catch(error => console.error('Error:', error));
+
+        divPeliculasFiltradas.innerHTML += '</form">'
     }
+
 });
 
 function mostrarActivas(listaIdsActivas, salas) {
@@ -207,8 +337,8 @@ function crearTabla(tipo, pelicula, sala) {
             frmBtn.action = "#"
             frmBtn.method = "post"
             let btnPelicula = document.createElement('button');
-            btnPelicula.id = "btnQuitar";
-            btnPelicula.name = "btnQuitar";
+            btnPelicula.id = "btnQuitar" + sala;
+            btnPelicula.name = "btnQuitar" + sala;
             btnPelicula.value = pelicula.id;
             btnPelicula.type = "submit";
             btnPelicula.textContent = "Quitar de la sala " + sala;

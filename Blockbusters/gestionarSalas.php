@@ -94,6 +94,7 @@
 
                     if (isset($_POST['modificarSala'])) {
                         $nuevoAforo = $_POST['nuevoAforo'];
+                        $c = new mysqli($servidor, $usuario, $contraseña, $basededatos);
 
                         if (!empty($nuevoAforo) || isset($_POST['eliminarPelicula'])) {
                             $sala = $_POST['sala'];
@@ -116,8 +117,14 @@
                                 $eliminarPelicula = $_POST['eliminarPelicula'];
                                 $update .= "IDPELICULA = ?, ";
                                 $tipos .= "s";
-                                $sinPelicula = "";
+                                $sinPelicula = null;
                                 $parametros[] = &$sinPelicula;
+
+                                $desactivarPelicula = "UPDATE PELICULAS SET ESTADO = 'I' WHERE IDAPI = ?";
+
+                                $stmt = $c->prepare($desactivarPelicula);
+                                $stmt->bind_param('s', $idPelicula);
+                                $stmt->execute();
                             }
 
                             // Eliminar la coma final si existe
@@ -129,7 +136,6 @@
                             $numSala = intval($sala);
                             $parametros[] = &$numSala;
 
-                            $c = new mysqli($servidor, $usuario, $contraseña, $basededatos);
                             $stmt = $c->prepare($update);
                             $stmt->bind_param($tipos, ...$parametros);
                             if ($stmt->execute()) {

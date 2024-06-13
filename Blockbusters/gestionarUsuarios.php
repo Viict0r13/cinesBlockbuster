@@ -47,15 +47,18 @@
 
                     $c = new mysqli($servidor, $usuario, $contraseña, $basededatos);
                     /* create a prepared statement */
-                    $stmt = mysqli_prepare($c, "SELECT ID, CORREO, CLAVE, ROL FROM USUARIOS WHERE CORREO = ?");
+                    $stmt = mysqli_prepare($c, "SELECT CLAVE, ROL FROM USUARIOS WHERE CORREO = ?");
 
-                    mysqli_stmt_bind_param($stmt, "s", $correo);
+                    if (!mysqli_stmt_bind_param($stmt, "s", $correo)) {
+                        mysqli_stmt_error($stmt);
+                    }
+
 
                     /* execute query */
                     mysqli_stmt_execute($stmt);
 
                     /* bind result variables */
-                    mysqli_stmt_bind_result($stmt, $idPelicula, $correo, $clave, $rol);
+                    mysqli_stmt_bind_result($stmt, $clave, $rol);
 
                     /* fetch value */
                     mysqli_stmt_store_result($stmt);

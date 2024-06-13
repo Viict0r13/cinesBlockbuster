@@ -69,10 +69,10 @@
                 $datos_json2 = json_encode($salas);
                 echo "<script>mostrarActivas(" . $datos_json . "," . $datos_json2 . ");</script>";
 
-                if (isset($_POST["btnQuitar"])) {
+                if (isset($_POST["btnQuitar1"])) {
                     $quitarActiva = "UPDATE PELICULAS SET ESTADO = 'I' WHERE IDAPI = ?";
 
-                    $idApi = $_POST["btnQuitar"];
+                    $idApi = $_POST["btnQuitar1"];
 
                     $tipos = "s";
 
@@ -80,6 +80,59 @@
                     $stmt = $c->prepare($quitarActiva);
                     $stmt->bind_param($tipos, $idApi);
                     if ($stmt->execute()) {
+
+
+                        $quitarActivaSala = "UPDATE SALAS SET IDPELICULA = NULL WHERE IDPELICULA = ?";
+
+                        $stmt2 = $c->prepare($quitarActivaSala);
+                        $stmt2->bind_param($tipos, $idApi);
+                        $stmt2->execute();
+                        echo "<script>alert('Película desactivada');</script>";
+                        header("Location: gestionarPeliculas.php");
+                        return;
+                    }
+                }
+                if (isset($_POST["btnQuitar2"])) {
+                    $quitarActiva = "UPDATE PELICULAS SET ESTADO = 'I' WHERE IDAPI = ?";
+
+                    $idApi = $_POST["btnQuitar2"];
+
+                    $tipos = "s";
+
+                    $c = new mysqli($servidor, $usuario, $contraseña, $basededatos);
+                    $stmt = $c->prepare($quitarActiva);
+                    $stmt->bind_param($tipos, $idApi);
+                    if ($stmt->execute()) {
+
+
+                        $quitarActivaSala = "UPDATE SALAS SET IDPELICULA = NULL WHERE IDPELICULA = ?";
+
+                        $stmt2 = $c->prepare($quitarActivaSala);
+                        $stmt2->bind_param($tipos, $idApi);
+                        $stmt2->execute();
+                        echo "<script>alert('Película desactivada');</script>";
+                        header("Location: gestionarPeliculas.php");
+                        return;
+                    }
+                }
+                if (isset($_POST["btnQuitar3"])) {
+                    $quitarActiva = "UPDATE PELICULAS SET ESTADO = 'I' WHERE IDAPI = ?";
+
+                    $idApi = $_POST["btnQuitar3"];
+
+                    $tipos = "s";
+
+                    $c = new mysqli($servidor, $usuario, $contraseña, $basededatos);
+                    $stmt = $c->prepare($quitarActiva);
+                    $stmt->bind_param($tipos, $idApi);
+                    if ($stmt->execute()) {
+
+
+                        $quitarActivaSala = "UPDATE SALAS SET IDPELICULA = NULL WHERE IDPELICULA = ?";
+
+                        $stmt2 = $c->prepare($quitarActivaSala);
+                        $stmt2->bind_param($tipos, $idApi);
+                        $stmt2->execute();
                         echo "<script>alert('Película desactivada');</script>";
                         header("Location: gestionarPeliculas.php");
                         return;
@@ -142,7 +195,7 @@
                     mysqli_stmt_fetch($stmt);
 
                     if (!empty($idPeliBD)) {
-                        echo "<script>alert('La sala 1 ya tiene una epelícula en poroyección')</script>";
+                        echo "<script>alert('La sala 1 ya tiene una película en proyección')</script>";
                         exit;
                     } else {
                         $reactivar = "UPDATE PELICULAS SET ESTADO = 'A' WHERE IDAPI = ?";
@@ -189,7 +242,7 @@
                     mysqli_stmt_fetch($stmt);
 
                     if (!empty($idPeliBD)) {
-                        echo "<script>alert('La sala 2 ya tiene una epelícula en poroyección')</script>";
+                        echo "<script>alert('La sala 2 ya tiene una película en proyección')</script>";
                         exit;
                     } else {
                         $reactivar = "UPDATE PELICULAS SET ESTADO = 'A' WHERE IDAPI = ?";
@@ -236,7 +289,7 @@
                     mysqli_stmt_fetch($stmt);
 
                     if (!empty($idPeliBD)) {
-                        echo "<script>alert('La sala 1 ya tiene una epelícula en poroyección')</script>";
+                        echo "<script>alert('La sala 1 ya tiene una película en proyección')</script>";
                         exit;
                     } else {
                         $reactivar = "UPDATE PELICULAS SET ESTADO = 'A' WHERE IDAPI = ?";
@@ -282,261 +335,262 @@
 
                     </form>
                 </div>
-                <div class="col-12" id="divPeliculasFiltradas"></div>
+                <div class="col-12" id="divPeliculasFiltradas">
+                    <?php
+                    if (isset($_POST["activar1"])) {
+                        $idApi = $_POST["activar1"];
+                        $conn = new mysqli($servidor, $usuario, $contraseña, $basededatos);
+
+                        // Verificar la conexión
+                        if ($conn->connect_error) {
+                            die("Error de conexión: " . $conn->connect_error);
+                        }
+
+                        $idPeliBD = "";
+
+                        $stmt = mysqli_prepare($c, "SELECT IDPELICULA FROM SALAS WHERE ID = 1");
+
+                        /* execute query */
+                        mysqli_stmt_execute($stmt);
+
+                        /* bind result variables */
+                        mysqli_stmt_bind_result($stmt, $idPeliBD);
+
+                        /* fetch value */
+                        mysqli_stmt_store_result($stmt);
+                        mysqli_stmt_fetch($stmt);
+
+                        if (!empty($idPeliBD)) {
+                            echo "<script>alert('La sala 1 ya tiene una película en proyección')</script>";
+                            exit;
+                        }
+
+                        $sql_select = "SELECT IDAPI FROM PELICULAS WHERE IDAPI = ?";
+
+                        if ($stmt_select = $conn->prepare($sql_select)) {
+                            // Vincular el parámetro y comprobar si hay errores
+                            $stmt_select->bind_param("s", $idApi);
+                            $stmt_select->execute();
+                            $stmt_select->store_result();
+
+                            if ($stmt_select->num_rows > 0) {
+                                // Si la película ya existe, realizar un UPDATE
+                                $reactivar = "UPDATE PELICULAS SET ESTADO = 'A' WHERE IDAPI = ?";
+                                $tipos = "s";
+
+                                $c = new mysqli($servidor, $usuario, $contraseña, $basededatos);
+                                $stmt = $c->prepare($reactivar);
+                                $stmt->bind_param($tipos, $idApi);
+                                if ($stmt->execute()) {
+                                    $updateSala = "UPDATE SALAS SET IDPELICULA = ? WHERE ID = 1";
+                                    $tipos = "s";
+                                    $stmt = $c->prepare($updateSala);
+                                    $stmt->bind_param($tipos, $idApi);
+                                    $stmt->execute();
+                                    echo "<script>alert('Película reactivada correctamente, la página será recargada')</script>";
+                                    header("Location: gestionarPeliculas.php");
+                                    return;
+                                }
+                            } else {
+
+                                // Preparar la consulta SQL con marcadores de posición (?)
+                                $sql = "INSERT INTO PELICULAS (IDAPI, ESTADO) VALUES (?, ?)";
+
+                                // Preparar la declaración SQL y comprobar si hay errores
+                                if ($stmt = $conn->prepare($sql)) {
+                                    // Vincular parámetros y comprobar si hay errores
+                                    $estado = "A";
+                                    $stmt->bind_param("ss", $idApi, $estado); // 
+                                    if ($stmt->execute()) {
+                                        $updateSala = "UPDATE SALAS SET IDPELICULA = ? WHERE ID = 1";
+                                        $tipos = "s";
+                                        $stmt = $c->prepare($updateSala);
+                                        $stmt->bind_param($tipos, $idApi);
+                                        $stmt->execute();
+                                        echo "<script>alert('Película añadida correctamente, la página será recargada')</script>";
+                                        // Cerrar la conexión
+                                        $conn->close();
+                                        header("Location: gestionarPeliculas.php");
+                                    } else {
+                                        $conn->close();
+                                        echo "<script>alert('Algo salió mal')</script>";
+                                    }
+                                }
+
+                            }
+                        }
+                    }
+                    if (isset($_POST["activar2"])) {
+                        $idApi = $_POST["activar2"];
+                        $conn = new mysqli($servidor, $usuario, $contraseña, $basededatos);
+
+                        // Verificar la conexión
+                        if ($conn->connect_error) {
+                            die("Error de conexión: " . $conn->connect_error);
+                        }
+
+                        $idPeliBD = "";
+
+                        $stmt = mysqli_prepare($c, "SELECT IDPELICULA FROM SALAS WHERE ID = 2");
+
+                        /* execute query */
+                        mysqli_stmt_execute($stmt);
+
+                        /* bind result variables */
+                        mysqli_stmt_bind_result($stmt, $idPeliBD);
+
+                        /* fetch value */
+                        mysqli_stmt_store_result($stmt);
+                        mysqli_stmt_fetch($stmt);
+
+                        if (!empty($idPeliBD)) {
+                            echo "<script>alert('La sala 2 ya tiene una película en proyección')</script>";
+                            exit;
+                        }
+
+                        $sql_select = "SELECT IDAPI FROM PELICULAS WHERE IDAPI = ?";
+
+                        if ($stmt_select = $conn->prepare($sql_select)) {
+                            // Vincular el parámetro y comprobar si hay errores
+                            $stmt_select->bind_param("s", $idApi);
+                            $stmt_select->execute();
+                            $stmt_select->store_result();
+
+                            if ($stmt_select->num_rows > 0) {
+                                // Si la película ya existe, realizar un UPDATE
+                                $reactivar = "UPDATE PELICULAS SET ESTADO = 'A' WHERE IDAPI = ?";
+                                $tipos = "s";
+
+                                $c = new mysqli($servidor, $usuario, $contraseña, $basededatos);
+                                $stmt = $c->prepare($reactivar);
+                                $stmt->bind_param($tipos, $idApi);
+                                if ($stmt->execute()) {
+                                    $updateSala = "UPDATE SALAS SET IDPELICULA = ? WHERE ID = 2";
+                                    $tipos = "s";
+                                    $stmt = $c->prepare($updateSala);
+                                    $stmt->bind_param($tipos, $idApi);
+                                    $stmt->execute();
+                                    echo "<script>alert('Película reactivada correctamente, la página será recargada')</script>";
+                                    header("Location: gestionarPeliculas.php");
+                                    return;
+                                }
+                            } else {
+
+                                // Preparar la consulta SQL con marcadores de posición (?)
+                                $sql = "INSERT INTO PELICULAS (IDAPI, ESTADO) VALUES (?, ?)";
+
+                                // Preparar la declaración SQL y comprobar si hay errores
+                                if ($stmt = $conn->prepare($sql)) {
+                                    // Vincular parámetros y comprobar si hay errores
+                                    $estado = "A";
+                                    $stmt->bind_param("ss", $idApi, $estado); // 
+                                    if ($stmt->execute()) {
+                                        $updateSala = "UPDATE SALAS SET IDPELICULA = ? WHERE ID = 2";
+                                        $tipos = "s";
+                                        $stmt = $c->prepare($updateSala);
+                                        $stmt->bind_param($tipos, $idApi);
+                                        $stmt->execute();
+                                        echo "<script>alert('Película añadida correctamente, la página será recargada')</script>";
+                                        // Cerrar la conexión
+                                        $conn->close();
+                                        header("Location: gestionarPeliculas.php");
+                                    } else {
+                                        $conn->close();
+                                        echo "<script>alert('Algo salió mal')</script>";
+                                    }
+                                }
+
+                            }
+                        }
+                    }
+                    if (isset($_POST["activar3"])) {
+                        $idApi = $_POST["activar3"];
+                        $conn = new mysqli($servidor, $usuario, $contraseña, $basededatos);
+
+                        // Verificar la conexión
+                        if ($conn->connect_error) {
+                            die("Error de conexión: " . $conn->connect_error);
+                        }
+
+                        $idPeliBD = "";
+
+                        $stmt = mysqli_prepare($c, "SELECT IDPELICULA FROM SALAS WHERE ID = 3");
+
+                        /* execute query */
+                        mysqli_stmt_execute($stmt);
+
+                        /* bind result variables */
+                        mysqli_stmt_bind_result($stmt, $idPeliBD);
+
+                        /* fetch value */
+                        mysqli_stmt_store_result($stmt);
+                        mysqli_stmt_fetch($stmt);
+
+                        if (!empty($idPeliBD)) {
+                            echo "<script>alert('La sala 3 ya tiene una película en proyección')</script>";
+                            exit;
+                        }
+
+                        $sql_select = "SELECT IDAPI FROM PELICULAS WHERE IDAPI = ?";
+
+                        if ($stmt_select = $conn->prepare($sql_select)) {
+                            // Vincular el parámetro y comprobar si hay errores
+                            $stmt_select->bind_param("s", $idApi);
+                            $stmt_select->execute();
+                            $stmt_select->store_result();
+
+                            if ($stmt_select->num_rows > 0) {
+                                // Si la película ya existe, realizar un UPDATE
+                                $reactivar = "UPDATE PELICULAS SET ESTADO = 'A' WHERE IDAPI = ?";
+                                $tipos = "s";
+
+                                $c = new mysqli($servidor, $usuario, $contraseña, $basededatos);
+                                $stmt = $c->prepare($reactivar);
+                                $stmt->bind_param($tipos, $idApi);
+                                if ($stmt->execute()) {
+                                    $updateSala = "UPDATE SALAS SET IDPELICULA = ? WHERE ID = 3";
+                                    $tipos = "s";
+                                    $stmt = $c->prepare($updateSala);
+                                    $stmt->bind_param($tipos, $idApi);
+                                    $stmt->execute();
+                                    echo "<script>alert('Película reactivada correctamente, la página será recargada')</script>";
+                                    header("Location: gestionarPeliculas.php");
+                                    return;
+                                }
+                            } else {
+
+                                // Preparar la consulta SQL con marcadores de posición (?)
+                                $sql = "INSERT INTO PELICULAS (IDAPI, ESTADO) VALUES (?, ?)";
+
+                                // Preparar la declaración SQL y comprobar si hay errores
+                                if ($stmt = $conn->prepare($sql)) {
+                                    // Vincular parámetros y comprobar si hay errores
+                                    $estado = "A";
+                                    $stmt->bind_param("ss", $idApi, $estado); // 
+                                    if ($stmt->execute()) {
+                                        $updateSala = "UPDATE SALAS SET IDPELICULA = ? WHERE ID = 3";
+                                        $tipos = "s";
+                                        $stmt = $c->prepare($updateSala);
+                                        $stmt->bind_param($tipos, $idApi);
+                                        $stmt->execute();
+                                        echo "<script>alert('Película añadida correctamente, la página será recargada')</script>";
+                                        // Cerrar la conexión
+                                        $conn->close();
+                                        header("Location: gestionarPeliculas.php");
+                                    } else {
+                                        $conn->close();
+                                        echo "<script>alert('Algo salió mal')</script>";
+                                    }
+                                }
+
+                            }
+                        }
+                    }
+                    ?>
+                </div>
             </div>
             <br>
             <br>
-            <?php
-            if (isset($_POST["activar1"])) {
-                $idApi = $_POST["activar1"];
-                $conn = new mysqli($servidor, $usuario, $contraseña, $basededatos);
-
-                // Verificar la conexión
-                if ($conn->connect_error) {
-                    die("Error de conexión: " . $conn->connect_error);
-                }
-
-                $idPeliBD = "";
-
-                $stmt = mysqli_prepare($c, "SELECT IDPELICULA FROM SALAS WHERE ID = 1");
-
-                /* execute query */
-                mysqli_stmt_execute($stmt);
-
-                /* bind result variables */
-                mysqli_stmt_bind_result($stmt, $idPeliBD);
-
-                /* fetch value */
-                mysqli_stmt_store_result($stmt);
-                mysqli_stmt_fetch($stmt);
-
-                if (!empty($idPeliBD)) {
-                    echo "<script>alert('La sala 1 ya tiene una epelícula en poroyección')</script>";
-                    exit;
-                }
-
-                $sql_select = "SELECT IDAPI FROM PELICULAS WHERE IDAPI = ?";
-
-                if ($stmt_select = $conn->prepare($sql_select)) {
-                    // Vincular el parámetro y comprobar si hay errores
-                    $stmt_select->bind_param("s", $idApi);
-                    $stmt_select->execute();
-                    $stmt_select->store_result();
-
-                    if ($stmt_select->num_rows > 0) {
-                        // Si la película ya existe, realizar un UPDATE
-                        $reactivar = "UPDATE PELICULAS SET ESTADO = 'A' WHERE IDAPI = ?";
-                        $tipos = "s";
-
-                        $c = new mysqli($servidor, $usuario, $contraseña, $basededatos);
-                        $stmt = $c->prepare($reactivar);
-                        $stmt->bind_param($tipos, $idApi);
-                        if ($stmt->execute()) {
-                            $updateSala = "UPDATE SALAS SET IDPELICULA = ? WHERE ID = 1";
-                            $tipos = "s";
-                            $stmt = $c->prepare($updateSala);
-                            $stmt->bind_param($tipos, $idApi);
-                            $stmt->execute();
-                            echo "<script>alert('Película reactivada correctamente, la página será recargada')</script>";
-                            header("Location: gestionarPeliculas.php");
-                            return;
-                        }
-                    } else {
-
-                        // Preparar la consulta SQL con marcadores de posición (?)
-                        $sql = "INSERT INTO PELICULAS (IDAPI, ESTADO) VALUES (?, ?)";
-
-                        // Preparar la declaración SQL y comprobar si hay errores
-                        if ($stmt = $conn->prepare($sql)) {
-                            // Vincular parámetros y comprobar si hay errores
-                            $estado = "A";
-                            $stmt->bind_param("ss", $idApi, $estado); // 
-                            if ($stmt->execute()) {
-                                $updateSala = "UPDATE SALAS SET IDPELICULA = ? WHERE ID = 1";
-                                $tipos = "s";
-                                $stmt = $c->prepare($updateSala);
-                                $stmt->bind_param($tipos, $idApi);
-                                $stmt->execute();
-                                echo "<script>alert('Película añadida correctamente, la página será recargada')</script>";
-                                // Cerrar la conexión
-                                $conn->close();
-                                header("Location: gestionarPeliculas.php");
-                            } else {
-                                $conn->close();
-                                echo "<script>alert('Algo salió mal')</script>";
-                            }
-                        }
-
-                    }
-                }
-            }
-            if (isset($_POST["activar2"])) {
-                $idApi = $_POST["activar2"];
-                $conn = new mysqli($servidor, $usuario, $contraseña, $basededatos);
-
-                // Verificar la conexión
-                if ($conn->connect_error) {
-                    die("Error de conexión: " . $conn->connect_error);
-                }
-
-                $idPeliBD = "";
-
-                $stmt = mysqli_prepare($c, "SELECT IDPELICULA FROM SALAS WHERE ID = 2");
-
-                /* execute query */
-                mysqli_stmt_execute($stmt);
-
-                /* bind result variables */
-                mysqli_stmt_bind_result($stmt, $idPeliBD);
-
-                /* fetch value */
-                mysqli_stmt_store_result($stmt);
-                mysqli_stmt_fetch($stmt);
-
-                if (!empty($idPeliBD)) {
-                    echo "<script>alert('La sala 2 ya tiene una epelícula en poroyección')</script>";
-                    exit;
-                }
-
-                $sql_select = "SELECT IDAPI FROM PELICULAS WHERE IDAPI = ?";
-
-                if ($stmt_select = $conn->prepare($sql_select)) {
-                    // Vincular el parámetro y comprobar si hay errores
-                    $stmt_select->bind_param("s", $idApi);
-                    $stmt_select->execute();
-                    $stmt_select->store_result();
-
-                    if ($stmt_select->num_rows > 0) {
-                        // Si la película ya existe, realizar un UPDATE
-                        $reactivar = "UPDATE PELICULAS SET ESTADO = 'A' WHERE IDAPI = ?";
-                        $tipos = "s";
-
-                        $c = new mysqli($servidor, $usuario, $contraseña, $basededatos);
-                        $stmt = $c->prepare($reactivar);
-                        $stmt->bind_param($tipos, $idApi);
-                        if ($stmt->execute()) {
-                            $updateSala = "UPDATE SALAS SET IDPELICULA = ? WHERE ID = 2";
-                            $tipos = "s";
-                            $stmt = $c->prepare($updateSala);
-                            $stmt->bind_param($tipos, $idApi);
-                            $stmt->execute();
-                            echo "<script>alert('Película reactivada correctamente, la página será recargada')</script>";
-                            header("Location: gestionarPeliculas.php");
-                            return;
-                        }
-                    } else {
-
-                        // Preparar la consulta SQL con marcadores de posición (?)
-                        $sql = "INSERT INTO PELICULAS (IDAPI, ESTADO) VALUES (?, ?)";
-
-                        // Preparar la declaración SQL y comprobar si hay errores
-                        if ($stmt = $conn->prepare($sql)) {
-                            // Vincular parámetros y comprobar si hay errores
-                            $estado = "A";
-                            $stmt->bind_param("ss", $idApi, $estado); // 
-                            if ($stmt->execute()) {
-                                $updateSala = "UPDATE SALAS SET IDPELICULA = ? WHERE ID = 2";
-                                $tipos = "s";
-                                $stmt = $c->prepare($updateSala);
-                                $stmt->bind_param($tipos, $idApi);
-                                $stmt->execute();
-                                echo "<script>alert('Película añadida correctamente, la página será recargada')</script>";
-                                // Cerrar la conexión
-                                $conn->close();
-                                header("Location: gestionarPeliculas.php");
-                            } else {
-                                $conn->close();
-                                echo "<script>alert('Algo salió mal')</script>";
-                            }
-                        }
-
-                    }
-                }
-            }
-            if (isset($_POST["activar3"])) {
-                $idApi = $_POST["activar3"];
-                $conn = new mysqli($servidor, $usuario, $contraseña, $basededatos);
-
-                // Verificar la conexión
-                if ($conn->connect_error) {
-                    die("Error de conexión: " . $conn->connect_error);
-                }
-
-                $idPeliBD = "";
-
-                $stmt = mysqli_prepare($c, "SELECT IDPELICULA FROM SALAS WHERE ID = 3");
-
-                /* execute query */
-                mysqli_stmt_execute($stmt);
-
-                /* bind result variables */
-                mysqli_stmt_bind_result($stmt, $idPeliBD);
-
-                /* fetch value */
-                mysqli_stmt_store_result($stmt);
-                mysqli_stmt_fetch($stmt);
-
-                if (!empty($idPeliBD)) {
-                    echo "<script>alert('La sala 3 ya tiene una epelícula en poroyección')</script>";
-                    exit;
-                }
-
-                $sql_select = "SELECT IDAPI FROM PELICULAS WHERE IDAPI = ?";
-
-                if ($stmt_select = $conn->prepare($sql_select)) {
-                    // Vincular el parámetro y comprobar si hay errores
-                    $stmt_select->bind_param("s", $idApi);
-                    $stmt_select->execute();
-                    $stmt_select->store_result();
-
-                    if ($stmt_select->num_rows > 0) {
-                        // Si la película ya existe, realizar un UPDATE
-                        $reactivar = "UPDATE PELICULAS SET ESTADO = 'A' WHERE IDAPI = ?";
-                        $tipos = "s";
-
-                        $c = new mysqli($servidor, $usuario, $contraseña, $basededatos);
-                        $stmt = $c->prepare($reactivar);
-                        $stmt->bind_param($tipos, $idApi);
-                        if ($stmt->execute()) {
-                            $updateSala = "UPDATE SALAS SET IDPELICULA = ? WHERE ID = 3";
-                            $tipos = "s";
-                            $stmt = $c->prepare($updateSala);
-                            $stmt->bind_param($tipos, $idApi);
-                            $stmt->execute();
-                            echo "<script>alert('Película reactivada correctamente, la página será recargada')</script>";
-                            header("Location: gestionarPeliculas.php");
-                            return;
-                        }
-                    } else {
-
-                        // Preparar la consulta SQL con marcadores de posición (?)
-                        $sql = "INSERT INTO PELICULAS (IDAPI, ESTADO) VALUES (?, ?)";
-
-                        // Preparar la declaración SQL y comprobar si hay errores
-                        if ($stmt = $conn->prepare($sql)) {
-                            // Vincular parámetros y comprobar si hay errores
-                            $estado = "A";
-                            $stmt->bind_param("ss", $idApi, $estado); // 
-                            if ($stmt->execute()) {
-                                $updateSala = "UPDATE SALAS SET IDPELICULA = ? WHERE ID = 3";
-                                $tipos = "s";
-                                $stmt = $c->prepare($updateSala);
-                                $stmt->bind_param($tipos, $idApi);
-                                $stmt->execute();
-                                echo "<script>alert('Película añadida correctamente, la página será recargada')</script>";
-                                // Cerrar la conexión
-                                $conn->close();
-                                header("Location: gestionarPeliculas.php");
-                            } else {
-                                $conn->close();
-                                echo "<script>alert('Algo salió mal')</script>";
-                            }
-                        }
-
-                    }
-                }
-            }
-            ?>
         </div>
     </div>
 </body>
